@@ -126,7 +126,7 @@ class ProjectSetup:
             tasks["tasks"].append({
                 "label": f"start-{name}",
                 "type": "shell",
-                "command": "npm run start",
+                "command": "npm run dev",
                 "options": {
                     "cwd": f"${{workspaceFolder}}/{relative_path}"
                 },
