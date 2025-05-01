@@ -12,7 +12,26 @@ This directory contains a Python script to automate the setup of a multi-reposit
 
 2. **Navigate to the directory** where you want all repositories and the `.vscode` folder to be created.
 
-3. **Run the setup script:**
+3. **Ensure your SSH key is loaded into an SSH agent**  
+   If your SSH key is protected by a passphrase (recommended for private repositories), you should load it into an SSH agent before running the script. This will prevent repeated passphrase prompts during cloning.
+
+   **On macOS/Linux:**
+   ```sh
+   eval $(ssh-agent -s)
+   ssh-add ~/.ssh/id_rsa
+   ```
+
+   **On Windows (Git Bash):**
+   ```sh
+   eval $(ssh-agent -s)
+   ssh-add ~/.ssh/id_rsa
+   ```
+
+   > **Note:**  
+   > The script cannot automate SSH passphrase entry.  
+   > You must use an SSH agent or a key without a passphrase for fully automated cloning.
+
+4. **Run the setup script:**
 
    ```sh
    python setup/main.py
@@ -22,6 +41,8 @@ This directory contains a Python script to automate the setup of a multi-reposit
      ```sh
      python setup/main.py --ssh-passphrase YOUR_PASSPHRASE
      ```
+     > However, this option does **not** automate SSH passphrase entry for Git.  
+     > It is recommended to use an SSH agent as described above.
 
 ## What the Script Does
 
