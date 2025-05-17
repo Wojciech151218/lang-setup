@@ -16,38 +16,8 @@ class ViteReactSetup(Setup):
             return False
 
     @property
-    def tasks_config(self) -> Dict:
-        return {
-            "tasks": [
-                {
-                    "label": f"{self.module_name}: Dev Server",
-                    "type": "shell",
-                    "command": "npm",
-                    "args": ["run", "dev"],
-                    "group": {
-                        "kind": "build",
-                        "isDefault": True
-                    },
-                    "presentation": {
-                        "reveal": "always",
-                        "panel": "new"
-                    },
-                    "problemMatcher": []
-                },
-                {
-                    "label": f"{self.module_name}: Build",
-                    "type": "shell",
-                    "command": "npm",
-                    "args": ["run", "build"],
-                    "group": "build",
-                    "presentation": {
-                        "reveal": "always",
-                        "panel": "new"
-                    },
-                    "problemMatcher": []
-                }
-            ]
-        }
+    def command(self) -> str:
+        return "npm run dev"
 
     @property
     def settings_config(self) -> Dict:
@@ -70,6 +40,7 @@ class ViteReactSetup(Setup):
     @property
     def launch_config(self) -> Dict:
         return {
+            "version": "0.2.0",
             "configurations": [
                 {
                     "type": "chrome",
@@ -77,6 +48,7 @@ class ViteReactSetup(Setup):
                     "name": f"{self.module_name}: Debug",
                     "url": "http://localhost:5173",
                     "webRoot": "${workspaceFolder}",
+                    "preLaunchTask": f"{self.module_name}: Run",
                     "sourceMapPathOverrides": {
                         "webpack:///src/*": "${webRoot}/src/*"
                     }

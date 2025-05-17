@@ -1,5 +1,6 @@
 import argparse
 from . import NodeSetup, PythonSetup, ViteReactSetup
+import os
 
 def setup_dependencies(args):
     """Setup dependencies for specified modules."""
@@ -21,10 +22,22 @@ def setup_dependencies(args):
         else:
             print(f"✗ Failed to install dependencies for {setup.module_name}")
 
-def setup_tasks(args):
-    """Setup VSCode tasks and launch configurations for specified modules."""
-    modules = args.modules if args.modules else ["auth", "content", "generation", "gate", "ui"]
+def clear_vscode_config():
+    """Clear all VSCode configuration files."""
+    vscode_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".vscode")
+    if os.path.exists(vscode_dir):
+        for file in ["tasks.json", "settings.json", "launch.json"]:
+            file_path = os.path.join(vscode_dir, file)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+def setup_tasks():
+    """Setup VSCode tasks and launch configurations for all modules."""
+    modules = ["auth", "content", "generation", "gate", "ui"]
     setups = []
+    
+    # Clear existing VSCode configuration
+    clear_vscode_config()
     
     for module in modules:
         if module in ["auth", "content", "gate"]:
@@ -68,7 +81,7 @@ def main():
     if args.command == "dependencies":
         setup_dependencies(args)
     elif args.command == "tasks":
-        setup_tasks(args)
+        setup_tasks()
     else:
         parser.print_help()
 
