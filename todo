@@ -1,0 +1,4 @@
+setting up some git tools like push all
+setting up .env files from json (can be remote)
+starting everything with docker compose (should be rather done in not so close future)
+adding arguments to cli commands to specify which module should be modified
