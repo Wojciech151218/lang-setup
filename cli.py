@@ -1,5 +1,6 @@
 import argparse
 from . import NodeSetup, PythonSetup, ViteReactSetup
+from .env_setup import EnvironmentSetup
 import os
 import json
 
@@ -76,25 +77,17 @@ def setup_tasks():
 def setup_env(args):
     """Setup environment variables for specified modules."""
     try:
-        with open(args.env_file, 'r') as f:
-            env_config = json.load(f)
+        env_setup = EnvironmentSetup(args.env_file)
+        modules = args.modules if args.modules else None
+        results = env_setup.setup_all_modules(modules)
+        
+        for module, success, error in results:
+            if success:
+                print(f"✓ Successfully set up environment for {module}")
+            else:
+                print(f"✗ Failed to set up environment for {module}: {error}")
     except Exception as e:
-        print(f"Error reading environment configuration file: {str(e)}")
-        return
-
-    modules = args.modules if args.modules else list(env_config.keys())
-    
-    for module in modules:
-        if module not in env_config:
-            print(f"✗ No environment configuration found for module {module}")
-            continue
-            
-        print(f"Setting up environment for {module}...")
-        setup = EnvSetup(module, env_config[module])
-        if setup.setup_env():
-            print(f"✓ Successfully set up environment for {module}")
-        else:
-            print(f"✗ Failed to set up environment for {module}")
+        print(f"Error: {str(e)}")
 
 def main():
     parser = argparse.ArgumentParser(description="Setup tool for the whole-thang project")
