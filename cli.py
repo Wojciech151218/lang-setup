@@ -67,12 +67,45 @@ def setup_tasks():
         elif module == "ui":
             setups.append(ViteReactSetup(module))
     
+    # Setup individual module tasks
     for setup in setups:
         print(f"Setting up VSCode configuration for {setup.module_name}...")
         if setup.setup_vscode():
             print(f"✓ Successfully configured VSCode for {setup.module_name}")
         else:
             print(f"✗ Failed to configure VSCode for {setup.module_name}")
+    
+    # Add a task to run all modules
+    vscode_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".vscode")
+    tasks_file = os.path.join(vscode_dir, "tasks.json")
+    
+    try:
+        with open(tasks_file, "r") as f:
+            tasks_config = json.load(f)
+        
+        # Add the "Run All" task
+        run_all_task = {
+            "label": "Run All Modules",
+            "dependsOn": [f"{module}: Run" for module in modules],
+            "group": {
+                "kind": "build",
+                "isDefault": True
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        }
+        
+        tasks_config["tasks"].append(run_all_task)
+        
+        with open(tasks_file, "w") as f:
+            json.dump(tasks_config, f, indent=4)
+        
+        print("✓ Successfully added 'Run All Modules' task")
+    except Exception as e:
+        print(f"✗ Failed to add 'Run All Modules' task: {str(e)}")
 
 def setup_env(args):
     """Setup environment variables for specified modules."""
