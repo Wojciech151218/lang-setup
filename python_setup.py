@@ -37,9 +37,10 @@ class PythonSetup(Setup):
     @property
     def command(self) -> str:
         venv_activate = self.get_venv_activate_command()
+        workspace_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__))))
         if os.name == 'nt':
             return f"{venv_activate}; python $env:WORKSPACE_FOLDER/{self.module_name}/src/main.py"
-        return f"{venv_activate} && python $WORKSPACE_FOLDER/{self.module_name}/src/main.py"
+        return f"{venv_activate} && python {workspace_path}/{self.module_name}/src/main.py"
 
     @property
     def settings_config(self) -> Dict:
