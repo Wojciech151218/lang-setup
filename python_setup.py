@@ -3,9 +3,10 @@ import subprocess
 from typing import Dict
 from .base import Setup
 
-class PythonSetup(Setup):
-    def __init__(self, module_name: str):
+class PythonSetup(Setup,):
+    def __init__(self, module_name: str, python_command: str = "python3"):
         super().__init__(module_name)
+        self.python_command = python_command
         self.venv_path = os.path.join(self.module_path, "venv")
         self.venv_python = os.path.join(self.venv_path, "Scripts", "python.exe") if os.name == 'nt' else os.path.join(self.venv_path, "bin", "python")
         self.venv_pip = os.path.join(self.venv_path, "Scripts", "pip.exe") if os.name == 'nt' else os.path.join(self.venv_path, "bin", "pip")
@@ -15,7 +16,7 @@ class PythonSetup(Setup):
             # Create virtual environment if it doesn't exist
             if not os.path.exists(self.venv_path):
                 print(f"Creating virtual environment for {self.module_name}...")
-                subprocess.run(["python", "-m", "venv", self.venv_path], check=True)
+                subprocess.run([self.python_command, "-m", "venv", self.venv_path], check=True)
 
             # Install requirements if they exist
             requirements_path = os.path.join(self.module_path, "requirements.txt")
@@ -39,8 +40,8 @@ class PythonSetup(Setup):
         venv_activate = self.get_venv_activate_command()
         workspace_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__))))
         if os.name == 'nt':
-            return f"{venv_activate}; python $env:WORKSPACE_FOLDER/{self.module_name}/src/main.py"
-        return f"{venv_activate} && python {workspace_path}/{self.module_name}/src/main.py"
+            return f"{venv_activate}; {self.python_command} $env:WORKSPACE_FOLDER/{self.module_name}/src/main.py"
+        return f"{venv_activate} && {self.python_command} {workspace_path}/{self.module_name}/src/main.py"
 
     @property
     def settings_config(self) -> Dict:
