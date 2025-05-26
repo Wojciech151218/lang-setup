@@ -4,6 +4,9 @@ from .env_setup import EnvironmentSetup
 import os
 import json
 
+
+all_modules = ["auth", "content", "generation", "gate", "ui", "interactions"]
+
 class EnvSetup:
     def __init__(self, module_name, env_vars):
         self.module_name = module_name
@@ -24,13 +27,13 @@ class EnvSetup:
 
 def setup_dependencies(args):
     """Setup dependencies for specified modules."""
-    modules = args.modules if args.modules else ["auth", "content", "generation", "gate", "ui"]
+    modules = args.modules if args.modules else all_modules
     setups = []
     
     for module in modules:
         if module in ["auth", "content", "gate"]:
             setups.append(NodeSetup(module))
-        elif module == "generation":
+        elif module in ["generation", "interactions"]:
             setups.append(PythonSetup(module))
         elif module == "ui":
             setups.append(ViteReactSetup(module))
@@ -53,16 +56,15 @@ def clear_vscode_config():
 
 def setup_tasks():
     """Setup VSCode tasks and launch configurations for all modules."""
-    modules = ["auth", "content", "generation", "gate", "ui"]
     setups = []
     
     # Clear existing VSCode configuration
     clear_vscode_config()
     
-    for module in modules:
+    for module in all_modules:
         if module in ["auth", "content", "gate"]:
             setups.append(NodeSetup(module))
-        elif module == "generation":
+        elif module in ["generation", "interactions"]:
             setups.append(PythonSetup(module))
         elif module == "ui":
             setups.append(ViteReactSetup(module))
@@ -86,7 +88,7 @@ def setup_tasks():
         # Add the "Run All" task
         run_all_task = {
             "label": "Run All Modules",
-            "dependsOn": [f"{module}: Run" for module in modules],
+            "dependsOn": [f"{module}: Run" for module in all_modules],
             "group": {
                 "kind": "build",
                 "isDefault": True
@@ -131,7 +133,7 @@ def main():
     deps_parser.add_argument(
         "--modules",
         nargs="+",
-        choices=["auth", "content", "generation", "gate", "ui"],
+        choices=all_modules,
         help="Specific modules to setup (default: all modules)"
     )
 
@@ -140,7 +142,7 @@ def main():
     tasks_parser.add_argument(
         "--modules",
         nargs="+",
-        choices=["auth", "content", "generation", "gate", "ui"],
+        choices=all_modules,
         help="Specific modules to setup (default: all modules)"
     )
 
@@ -149,7 +151,7 @@ def main():
     env_parser.add_argument(
         "--modules",
         nargs="+",
-        choices=["auth", "content", "generation", "gate", "ui"],
+        choices=all_modules,
         help="Specific modules to setup (default: all modules)"
     )
     env_parser.add_argument(
